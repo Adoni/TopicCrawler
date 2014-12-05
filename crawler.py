@@ -92,7 +92,6 @@ def request(ch, method, properties, body):
     body=eval(body)
     response = get_html(body)
     print '==============   Html Begin  ====================='
-    print response
     print '==============   Html End  ====================='
     #将计算结果发送回控制中心
     ch.basic_publish(exchange='',

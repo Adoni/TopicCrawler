@@ -204,7 +204,7 @@ def get_location(html):
         if not u'地区：' in html:
             continue
         tree=etree.HTML(html)
-        nodes=tree.xpath(u'//ul[@class="ul_auto clearfix"]/li[1]//a')
+        nodes=tree.xpath(u'//ul[@class="ul_auto clearfix"]/li[2]//a')
         words=[]
         for node in nodes:
             text=node.xpath('string()')
@@ -223,7 +223,7 @@ def get_tag(html):
         if not u'标签：' in html:
             continue
         tree=etree.HTML(html)
-        nodes=tree.xpath(u'//ul[@class="ul_auto clearfix"]/li[1]//a')
+        nodes=tree.xpath(u'//ul[@class="ul_auto clearfix"]/li[3]//a')
         words=[]
         for node in nodes:
             text=node.xpath('string()')

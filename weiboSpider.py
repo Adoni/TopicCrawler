@@ -68,7 +68,7 @@ class TopicSpider():
         for i in range(0,total/count):
             base_url='https://api.weibo.com/2/search/topics.json?'
             complete_url=base_url+'access_token='+self.access_token+'&q='+urllib2.quote(topic)+'&count='+str(count)+'&page='+str(i+1)
-            html=self.get_html(complete_url, False)
+            html=self.get_html(complete_url, self.all_headers['simple_headers'], False)
             if(html=='' or 'error' in html):
                 print('get html error')
                 print(complete_url)
@@ -466,6 +466,7 @@ class TopicSpider():
     def crawl_comments(self):
         all_uids=[]
         existed_topics=self.get_existed_topics()
+        candidate_topics=[topic.replace('\n','') for topic in open('./candidates.seed')]
         #1.获取每个topic的评论及去重之后的user列表
         for topic in candidate_topics:#[0:self.MAX_TOPIC_COUNT]:
             print('Getting '+str(candidate_topics.index(topic))+'\\'+str(len(candidate_topics))+' topics')
@@ -484,10 +485,12 @@ class TopicSpider():
 
     def crawl_topic_information_and_host_information(self):
         #获取每个topic的information host
-        candidate_topics=self.get_existed_topics()
+        #candidate_topics=self.get_existed_topics()
+        candidate_topics=[topic.replace('\n','').split('\t')[1] for topic in open('./finaltopicMap10.txt')]
         existed_topic_information=self.get_existed_topic_information()
-        print existed_topic_information
+        print len(existed_topic_information)
         for topic in candidate_topics:
+            topic=topic.replace('\r','')
             #获取候选集中话题的信息
             if topic in existed_topic_information:
                 print '%s is existed'%topic
@@ -499,6 +502,8 @@ class TopicSpider():
                 print topic
                 continue
             #获取话题主持人信息
+            self.output_topic_information(topic_information)
+            continue
             host_information=self.get_user_information('screen_name',topic_information['host'])
             if(host_information==None):
                 print 'Host information is None'
@@ -508,7 +513,6 @@ class TopicSpider():
                 print type(topic_information['host'])
                 continue
             host_information['topic_name']=topic.replace('#','').replace('\r','').decode('utf8')
-            self.output_topic_information(topic_information)
             self.output_topic_host_information(host_information)
             print('Success to get uids of topic '+topic)
 
@@ -560,6 +564,3 @@ class TopicSpider():
 if(__name__=='__main__'):
     a=TopicSpider()
     a.start_requests()
-    #topic_information=a.get_topic_information('#十年记忆，淘宝时光#')
-    #host=a.get_user_information('screen_name',topic_information['host'])
-    #print host
